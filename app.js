@@ -15,7 +15,7 @@ $(document).ready(function(){
         correctAnswer: 1
     }, {
         question: "Quel est le nombre de saisons de SNK?",
-        choices: [15, 4, 6, 55, 8],
+        choices: ["15", "4", "6", "55", "8"],
         correctAnswer: 1
     }, {
         question: "Combien de jeu The Witcher il y a eu ?",
@@ -34,7 +34,7 @@ $(document).ready(function(){
         choices: ['De conduire une Impala', 'De devenir un Sorcelleur', 'De devenir un catcheur', 'De voir Wrestlemania'],
         correctAnswer: 3
     }, {
-        question: "Qui a battu la Streak de l'Undertaker ? ",
+        question: "Qui a battu la Streak de l'Undertaker à Wrestlemania 30 ? ",
         choices: ['Triple H', 'Brock Lesnar', 'Edge', 'Seth Rollins', 'Kane'],
         correctAnswer: 1
     }, {
@@ -77,12 +77,12 @@ $(document).ready(function(){
         question: "Comment s'appele la fille adoptive de Geralt qu'on doit retrouver dans The Witcher 3 : Wild Hunt ?",
         choices: ['Rowina', 'Mary', "Ciri", "Triss"],
         correctAnswer: 2
-    },{
+    }, {
         question: "Completer cette phrase ! 'JETTE UN SOUS ...'",
         choices: ['AU SORCELLEUR', 'AU IMPOTS', 'A TON DAMIEN'],
         correctAnswer: 2
     }, {
-        question: "Mon pseudo Discord ('Droskall') est le meme partout (sur toutes les autres plateformes 'Xbox, Insta, Facebook') ?",
+        question: "Mon pseudo Discord ('Droskall') est le meme partout (sur toutes les autres plateformes 'Xbox, Insta, Facebook ....') ?",
         choices: ['OUI', 'NON'],
         correctAnswer: 1
     }, {
@@ -103,4 +103,155 @@ $(document).ready(function(){
         correctAnswer: 0
     }
     ];
-}
+
+    let questionCounter = 0;
+    let selections = [];
+    let quiz = $('.content');
+
+    function displayNext() {
+        quiz.fadeOut(function() {
+            $('#question').remove();
+
+            if(questionCounter < questions.length){
+                let nextQuestion = createQuestionElement(questionCounter);
+                quiz.append(nextQuestion).fadeIn();
+                if (!(isNaN(selections[questionCounter]))) {
+                    $('input[value='+selections[questionCounter]+']').prop('checked', true);
+                }
+
+                if(questionCounter === 1){
+                    $('#prev').show();
+                } else if(questionCounter === 0){
+
+                    $('#prev').hide();
+                    $('#next').show();
+                }
+            }
+            else {
+                let scoreElem = displayScore();
+                quiz.append(scoreElem).fadeIn();
+                $('#next').hide();
+                $('#prev').hide();
+                $('#start').show();
+            }
+        });
+    }
+
+
+    displayNext();
+
+    $('#next').on('click', function (e) {
+        e.preventDefault();
+
+        if(quiz.is(':animated')) {
+            return false;
+        }
+
+        choose();
+
+        if (isNaN(selections[questionCounter])) {
+            $('#warning').text('Veullez choisir une proposition !');
+        }
+
+        else {
+            questionCounter++;
+            displayNext();
+            $('#warning').text('');
+        }
+    });
+
+    $('#prev').on('click', function (e) {
+        e.preventDefault();
+
+        if(quiz.is(':animated')) {
+            return false;
+        }
+        choose();
+        questionCounter--;
+        displayNext();
+    });
+
+    $('#start').on('click', function (e) {
+        e.preventDefault();
+
+        if(quiz.is(':animated')) {
+            return false;
+        }
+        questionCounter = 0;
+        selections = [];
+        displayNext();
+        $('#start').hide();
+    });
+
+    function createQuestionElement(index) {
+        let qElement = $('<div>', {
+            id: 'question'
+        });
+
+        let header = $('<h2>Question ' + (index + 1) + ':</h2>');
+        qElement.append(header);
+
+        let question = $('<p>').append(questions[index].question);
+        qElement.append(question);
+
+        let radioButtons = createRadios(index);
+        qElement.append(radioButtons);
+
+        let warningText = $('<p id="warning">');
+        qElement.append(warningText);
+
+        return qElement;
+
+    }
+
+    function createRadios(index) {
+        let radioList = $('<ul>');
+        let item;
+        let input = '';
+        for (let i = 0; i < questions[index].choices.length; i++) {
+            item = $('<li>');
+            input = '<input type="radio" name="answer" value=' + i + ' />';
+            input += questions[index].choices[i];
+            item.append(input);
+            radioList.append(item);
+        }
+        return radioList;
+    }
+
+    function choose() {
+        selections[questionCounter] = +$('input[name="answer"]:checked').val();
+    }
+
+    function displayScore() {
+        let score = $('<h3>',{id: 'question'});
+
+        let numCorrect = 0;
+        for (let i = 0; i < selections.length; i++) {
+            if (selections[i] === questions[i].correctAnswer) {
+                numCorrect++;
+            }
+        }
+
+        let percentage = numCorrect / questions.length;
+        if (percentage >= 0.9){
+            score.append('Incroiyable! Tu as eu ' + numCorrect + ' sur ' +
+                questions.length + ' bonne reponses');
+        }
+
+        else if (percentage >= 0.7){
+            score.append('Bien joue! Tu as eu ' + numCorrect + ' sur ' +
+                questions.length + ' bonne reponses');
+        }
+
+        else if (percentage >= 0.5){
+            score.append('Tu as eu ' + numCorrect + ' sur ' +
+                questions.length + ' bonne reponses');
+        }
+
+        else {
+            score.append('Tu n as eu que ' + numCorrect + ' sur ' +
+                questions.length + ' Voulez-vous recomencez?');
+        }
+        return score;
+    }
+});

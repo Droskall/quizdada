@@ -15,21 +15,22 @@ body {
 }
 
 .content {
-    background-color: white;
-    width: 75%;
-    max-width: 800px;
+    background-color: #41418b;
+    width: 100%;
     min-height: 170px;
     box-shadow: 5px 5px 9px #333;
+    color: white;
 }
 
 h1{
     text-align: center;
-    font-size: 50px;
+    font-size: 80px;
     color: white;
 }
 
 h3,h4{
     text-align: center;
+    font-size: 25px;
     color: white;
 }
 
@@ -72,21 +73,30 @@ button {
     margin-top: 25px;
 }
 
-@media screen and (max-width: 250px) {
+@media screen and (max-width: 800px) {
+
+    body {
+        background-color: #41418b;
+    }
+
     h1{
         text-align: center;
         font-size: 100px;
+        background-color: #41418b;
+        color: white;
     }
 
     h3,h4{
         text-align: center;
         font-size: 50px;
+        background-color: #41418b;
+        color: white;
     }
 
     .content{
         width: 75%;
-        max-width: 800px;
         min-height: 170px;
         box-shadow: 5px 5px 9px #333;
+        color: white;
     }
 }
